@@ -17,7 +17,16 @@ typedef struct {
 } Instr;
 
 
-//public entry point
+
+/**
+ * public entry point to the assembler
+ * 
+ * @param asm_path path of the .asm file
+ * @param out_path path we want to output to (NULL if we want terminal output)
+ * 
+ * @return 0 on success, 1 otherwise
+ * 
+ */
 int assemble_file(const char* asm_path, const char* out_path);
 
 

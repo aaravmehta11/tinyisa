@@ -1,0 +1,3 @@
+ADD R1, R2, R3
+NOT R4, R4
+HALT

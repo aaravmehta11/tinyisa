@@ -92,7 +92,7 @@ static int parse_mnemonic(const char* s, Opcode* out_op) {
 }
 
 static int parse_line_to_instr(const char* line, int lineno, Instr* out) {
-    if (line == NULL || lineno < 0 || out == NULL) {
+    if (line == NULL || lineno < 0) {
         return -1;
     }
 
@@ -124,7 +124,6 @@ static int parse_line_to_instr(const char* line, int lineno, Instr* out) {
     if (numtokens == 1) {
         if (op == OP_HALT) {
             out->dr = out->sr1 = out->sr2 = 0;
-
             return 1;
         }
         return -1;
@@ -163,5 +162,70 @@ static int parse_line_to_instr(const char* line, int lineno, Instr* out) {
     out->sr2 = sr2;
 
     return 1;
+}
+
+static uint16_t encode_instr(const Instr* in) {
+
+    return (((in->op & 0xF) << 12) |
+            ((in->dr & 0x7) << 9) |
+            ((in->sr1 & 0x7) << 6) |
+            ((0x0 << 3)) |
+            ((in->sr2 & 0x7)));
+}
+
+static void write_hex_to_stream(FILE* out, uint16_t binary_word) {
+    fprintf(out, "%04X\n", binary_word);
+}
+
+int assemble_file(const char* asm_path, const char* out_path) {
+    if (!asm_path) {
+        return 1;
+    }
+
+    FILE* in = fopen(asm_path, "r");
+
+    if (!in) {
+        perror("fopen input");
+        return 1;
+    }
+
+    FILE* out = stdout;
+    if (out_path) {
+        out = fopen(out_path, "w");
+        if (!out) {
+            perror("fopen output");
+            fclose(in);
+            return 1;
+        }
+    }
+
+    char line[256];
+    int lineno = 0;
+
+    while (fgets(line, sizeof(line), in)) {
+        lineno++;
+
+        Instr instr;
+        int status = parse_line_to_instr(line, lineno, &instr);
+
+        if (status == 0) {
+            continue;
+        }
+        if (status < 0) {
+            if (out_path) {
+                fclose(out);
+            }
+            fclose(in);
+            return 1;
+        }
+
+        uint16_t binary_instr = encode_instr(&instr);
+        write_hex_to_stream(out, binary_instr);
+    }
+    fclose(in);
+    if (out_path) {
+        fclose(out);
+    }
+    return 0;
 }
 
