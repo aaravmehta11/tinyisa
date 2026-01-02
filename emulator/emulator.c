@@ -42,3 +42,35 @@ int load_hex(const char* hex_path, CPU* cpu) {
 
 }
 
+int cpu_step(CPU* cpu) {
+    int pc = cpu->pc++;
+    uint16_t ir = cpu->mem[pc];
+
+    uint16_t op = (ir << 12) & 0xF;
+    uint16_t dr = (ir << 9) & 0x7;
+    uint16_t sr1 = (ir << 6) & 0x7;
+    uint16_t sr2 = ir & 0x7;
+
+    switch (op) {
+        case OP_ADD: cpu->regs[dr] = cpu->regs[sr1] + cpu->regs[sr2]; break;
+        case OP_SUB: cpu->regs[dr] = cpu->regs[sr1] - cpu->regs[sr2]; break;
+        case OP_OR: cpu->regs[dr] = cpu->regs[sr1] | cpu->regs[sr2]; break;
+        case OP_AND: cpu->regs[dr] = cpu->regs[sr1] & cpu->regs[sr2]; break;
+        case OP_NOT: cpu->regs[dr] = (uint16_t) ~cpu->regs[sr1];
+        case OP_HALT: cpu->running = 0; return 0;
+        default:
+            fprintf(stderr, "Unknown Opcode %u at pc %u\n", op, (unsigned) (cpu->pc - 1));
+            return 1;
+    }
+    return 0;
+}
+
+void run_cpu(CPU* cpu) {
+    while (cpu->running) {
+        if (cpu_step(cpu) != 0) {
+            break;
+        }
+    }
+}
+
+ 
