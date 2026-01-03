@@ -51,19 +51,19 @@ int cpu_step(CPU* cpu) {
     uint16_t sr1 = (ir >> 6) & 0x7;
     uint16_t sr2 = ir & 0x7;
 
-    printf("Instruction: %04X\n", ir);
-    printf("Opcode: %04X\n", op);
-    printf("DR: %03X\n", dr);
-    printf("sr1: %03X\n", sr1);
-    printf("sr2: %03X\n", sr2);
-
-
     switch (op) {
-        case OP_ADD: cpu->regs[dr] = cpu->regs[sr1] + cpu->regs[sr2]; break;
-        case OP_SUB: cpu->regs[dr] = cpu->regs[sr1] - cpu->regs[sr2]; break;
+        case OP_ADD:
+            cpu->regs[dr] = cpu->regs[sr1] + cpu->regs[sr2];
+            break;
+        case OP_SUB: 
+            printf("Subtracting %d - %d into R%d\n", cpu->regs[sr1], cpu->regs[sr2], dr);
+            cpu->regs[dr] = cpu->regs[sr1] - cpu->regs[sr2];
+            break;
         case OP_OR: cpu->regs[dr] = cpu->regs[sr1] | cpu->regs[sr2]; break;
         case OP_AND: cpu->regs[dr] = cpu->regs[sr1] & cpu->regs[sr2]; break;
-        case OP_NOT: cpu->regs[dr] = (uint16_t) ~cpu->regs[sr1];
+        case OP_NOT:
+            cpu->regs[dr] = (uint16_t) ~cpu->regs[sr1];
+            break;
         case OP_HALT: cpu->running = 0; return 0;
         default:
             fprintf(stderr, "Unknown Opcode %u at pc %u\n", op, (unsigned) (cpu->pc - 1));

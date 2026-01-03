@@ -3,7 +3,7 @@
 
 typedef struct {
     uint16_t mem[65536];
-    int regs[8];
+    uint16_t regs[8];
     int running;
     int pc;
 } CPU;
