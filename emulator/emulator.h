@@ -17,7 +17,7 @@ typedef struct {
  * 
  * @param cpu to be initialized
  */
-void cpu_init(CPU* cpu);
+void init_cpu(CPU* cpu);
 
 /**
  * Loads .hex file (one 16-bit hex word per line) to be read from
