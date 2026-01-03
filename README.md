@@ -8,7 +8,7 @@ A personalized 16-bit ISA with a custom assembler and CPU emulator, built in C.
 
 ## ISA Breakdown:
 - 15–12 opcode | 11–9 DR | 8–6 SR1 | 5–3 000 | 2–0 SR2
-Supported Operations:
+## Supported Operations:
 - ADD
 - SUB (nice break from manual negation & addition)
 - AND
